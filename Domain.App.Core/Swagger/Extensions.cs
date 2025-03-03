@@ -1,9 +1,11 @@
 using Domain.App.Core.Options;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+
 
 namespace Domain.App.Core.Swagger;
 
@@ -21,10 +23,12 @@ public static class Extensions
     }
 
     /// <summary>
-    /// Adds SwaggerGen
+    ///     Adds SwaggerGen
     /// </summary>
-    /// <param name="builder"><see cref="WebApplicationBuilder"/></param>
-    /// <param name="useJwtSecurityScheme">if true adds <see cref="OpenApiSecurityScheme"/> with "Bearer" scheme</param>
+    /// <param name="builder">
+    ///     <see cref="WebApplicationBuilder" />
+    /// </param>
+    /// <param name="useJwtSecurityScheme">if true adds <see cref="OpenApiSecurityScheme" /> with "Bearer" scheme</param>
     public static void AddSwagger(this WebApplicationBuilder builder, bool useJwtSecurityScheme)
     {
         builder.Services.AddSwaggerGen(o =>

@@ -1,5 +1,7 @@
 ﻿using Domain.App.Core.Monitoring.Attributes;
+
 using Prometheus;
+
 
 namespace Domain.App.Core.Monitoring;
 
@@ -34,7 +36,7 @@ public class GlobalMetricReporter
             new HistogramConfiguration
             {
                 Buckets = Histogram.ExponentialBuckets(1, 2, 16),
-                LabelNames = new[] { "request" },
+                LabelNames = new[] { "request" }
             });
 
         this.RequestInProcess = Metrics.CreateGauge(

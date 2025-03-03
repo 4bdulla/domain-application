@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
+
 namespace Domain.App.Core.FastFailing;
 
 public class FailFastTask
@@ -19,7 +20,7 @@ public class FailFastTask
     {
         using IServiceScope scope = _provider.CreateScope();
 
-        foreach (Type serviceType in FailFastTask.GetServices(_services))
+        foreach (Type serviceType in GetServices(_services))
         {
             scope.ServiceProvider.GetServices(serviceType);
         }

@@ -1,6 +1,9 @@
 using System.ComponentModel;
+
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+
+using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
+
 
 namespace Domain.App.Core.Integration.Attributes;
 

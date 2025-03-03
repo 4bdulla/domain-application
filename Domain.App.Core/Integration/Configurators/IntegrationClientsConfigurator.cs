@@ -1,15 +1,22 @@
 using System.Reflection;
 using System.Text.Json;
+
 using CorrelationId.HttpClient;
+
 using Domain.App.Core.Integration.Attributes;
 using Domain.App.Core.Options;
 using Domain.App.Core.Utility;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Prometheus;
+
 using Refit;
+
 using Serilog;
+
 
 namespace Domain.App.Core.Integration.Configurators;
 
@@ -37,11 +44,11 @@ internal class IntegrationClientsConfigurator
         {
             string clientName = type.Name.TrimStart('I');
 
-            ClientOptions clientOptions = IntegrationClientsConfigurator.GetClientOptions(builder, type, clientName);
+            ClientOptions clientOptions = GetClientOptions(builder, type, clientName);
 
             Log.Debug("configuring {Client} options: {@Options}", clientName, clientOptions);
 
-            IntegrationClientsConfigurator.ConfigureClient(builder, type, clientOptions, settings);
+            ConfigureClient(builder, type, clientOptions, settings);
         }
     }
 

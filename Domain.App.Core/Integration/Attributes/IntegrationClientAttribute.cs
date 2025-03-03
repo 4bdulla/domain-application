@@ -1,5 +1,6 @@
 using Domain.App.Core.Options;
 
+
 namespace Domain.App.Core.Integration.Attributes;
 
 [AttributeUsage(AttributeTargets.Interface)]

@@ -1,10 +1,10 @@
 using System.Reflection;
 
+
 namespace Domain.App.Core.Integration.Serialization;
 
-interface ISampleInterface
-{
-}
+internal interface ISampleInterface { }
+
 
 public static class TypeMapper
 {

@@ -1,8 +1,10 @@
-﻿using System.Threading;
-using Domain.App.Core.Mediator.Abstraction;
+﻿using Domain.App.Core.Mediator.Abstraction;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 
 namespace Domain.App.Core.Mediator.Behaviors;
 
@@ -13,5 +15,5 @@ where TRequest : IBaseRequest
 
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken token) =>
-        await base.HandleInternal(next, token);
+        await HandleInternal(next, token);
 }

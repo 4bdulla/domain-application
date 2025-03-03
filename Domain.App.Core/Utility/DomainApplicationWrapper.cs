@@ -1,10 +1,13 @@
 using Domain.App.Core.FastFailing;
 using Domain.App.Core.Monitoring;
 using Domain.App.Core.Options;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Serilog;
+
 
 namespace Domain.App.Core.Utility;
 

@@ -1,6 +1,9 @@
 using Domain.App.Core.Options;
+
 using FirebaseAdmin;
+
 using Google.Apis.Auth.OAuth2;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +12,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+
 using NetDevPack.Security.JwtExtensions;
+
 
 namespace Domain.App.Core.Auth;
 
@@ -57,7 +62,7 @@ public static class Extensions
     }
 
     public static void ConfigureAuthServer<TDbContext>(this WebApplicationBuilder builder, AuthOptions options)
-        where TDbContext : DbContext
+    where TDbContext : DbContext
     {
         builder.Services.AddJwksManager().UseJwtValidation();
 
@@ -78,6 +83,7 @@ public static class Extensions
             });
 
         builder.Services.AddAuthorization();
+
         builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
             opt.TokenLifespan = TimeSpan.FromHours(1));
 
@@ -120,7 +126,8 @@ public static class Extensions
     }
 
 
-    private static async Task CreateApplicationRoleIfNotExist(this RoleManager<IdentityRole> roleManager,
+    private static async Task CreateApplicationRoleIfNotExist(
+        this RoleManager<IdentityRole> roleManager,
         string roleName)
     {
         bool roleExist = await roleManager.RoleExistsAsync(roleName);

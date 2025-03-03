@@ -1,6 +1,9 @@
 using System.Diagnostics;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
+
 
 namespace Domain.App.Core.Mediator.Abstraction;
 

@@ -1,10 +1,14 @@
 using System.Net;
 using System.Reflection;
+
 using Domain.App.Core.Monitoring.Attributes;
 using Domain.App.Core.Utility;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+
 using Prometheus;
+
 
 namespace Domain.App.Core.Monitoring;
 

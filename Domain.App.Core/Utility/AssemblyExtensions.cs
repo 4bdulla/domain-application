@@ -1,7 +1,7 @@
 using System.Reflection;
 
-namespace Domain.App.Core.Utility;
 
+namespace Domain.App.Core.Utility;
 
 public static class AssemblyExtensions
 {

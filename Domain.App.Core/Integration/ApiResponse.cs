@@ -3,21 +3,24 @@ namespace Domain.App.Core.Integration;
 public static class ApiResponse
 {
     /// <summary>
-    /// Creates <see cref="ApiResponse{T}"/>
+    ///     Creates <see cref="ApiResponse{T}" />
     /// </summary>
-    /// <returns><see cref="ApiResponse{T}"/> with result code = 0 &amp; result description = "Success"</returns>
+    /// <returns><see cref="ApiResponse{T}" /> with result code = 0 &amp; result description = "Success"</returns>
     public static ApiResponse<object> Ok() => new("0");
 
     /// <summary>
-    /// Creates <see cref="ApiResponse{T}"/>
+    ///     Creates <see cref="ApiResponse{T}" />
     /// </summary>
-    /// <param name="payload">Payload of type <typeparamref name="T"/></param>
+    /// <param name="payload">Payload of type <typeparamref name="T" /></param>
     /// <typeparam name="T">Type of the payload</typeparam>
-    /// <returns><see cref="ApiResponse{T}"/> with result code = 0 &amp; result description = "Success" &amp; payload of type <typeparamref name="T"/></returns>
+    /// <returns>
+    ///     <see cref="ApiResponse{T}" /> with result code = 0 &amp; result description = "Success" &amp; payload of type
+    ///     <typeparamref name="T" />
+    /// </returns>
     public static ApiResponse<T> Ok<T>(T payload) => new("0", string.Empty, payload);
 
     public static ApiResponse<object> Error(Exception ex, bool includeExceptionDetails = false) =>
-        ApiResponse.CreateResponse("1", ex, includeExceptionDetails);
+        CreateResponse("1", ex, includeExceptionDetails);
 
     public static ApiResponse<object> CreateResponse(string resultCode, Exception exception, bool includeExceptionDetails)
     {

@@ -1,10 +1,11 @@
 using Domain.App.Core.Exceptions.Abstraction;
 
+
 namespace Domain.App.Core.Exceptions;
 
 public class IntegrationException : Exception, IApplicationException
 {
-    public IntegrationException() : base() { }
+    public IntegrationException() { }
 
     public IntegrationException(string message) : base(message) { }
 

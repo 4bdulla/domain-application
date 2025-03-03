@@ -1,7 +1,9 @@
-using System.Threading;
 using Domain.App.Core.Exceptions;
+
 using MediatR;
+
 using Refit;
+
 
 namespace Domain.App.Core.Integration.Abstractions;
 

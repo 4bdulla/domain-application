@@ -1,7 +1,12 @@
 using Domain.App.Core.Exceptions.Abstraction;
 using Domain.App.Core.Monitoring;
+
 using MediatR;
+
 using Prometheus;
+
+using ITimer = Prometheus.ITimer;
+
 
 namespace Domain.App.Core.Mediator.Abstraction;
 

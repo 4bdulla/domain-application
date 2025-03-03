@@ -1,8 +1,11 @@
 using System.Security.Claims;
+
 using Domain.App.Core.Database.Abstractions;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+
 
 namespace Domain.App.Core.Database;
 

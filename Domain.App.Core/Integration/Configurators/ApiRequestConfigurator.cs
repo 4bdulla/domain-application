@@ -1,11 +1,17 @@
 using System.Reflection;
+
 using Domain.App.Core.Integration.Attributes;
 using Domain.App.Core.Utility;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+
 using Serilog;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+
+using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
+
 
 namespace Domain.App.Core.Integration.Configurators;
 

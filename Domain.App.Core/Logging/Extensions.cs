@@ -1,5 +1,7 @@
 using Destructurama;
+
 using Microsoft.AspNetCore.Builder;
+
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
@@ -9,14 +11,17 @@ using Serilog.Exceptions.EntityFrameworkCore.Destructurers;
 using Serilog.Exceptions.SqlServer.Destructurers;
 using Serilog.Formatting.Compact;
 
+
 namespace Domain.App.Core.Logging;
 
 public static class Extensions
 {
     /// <summary>
-    /// Adds Serilog request logging pipeline
+    ///     Adds Serilog request logging pipeline
     /// </summary>
-    /// <param name="app"><see cref="WebApplication"/></param>
+    /// <param name="app">
+    ///     <see cref="WebApplication" />
+    /// </param>
     public static void UseRequestLogging(this WebApplication app)
     {
         app.UseSerilogRequestLogging(options =>
@@ -33,9 +38,11 @@ public static class Extensions
     }
 
     /// <summary>
-    /// Adds configuration for <see cref="Serilog"/> with exception destructuring from <see cref="Destructurama"/> and required enrichment
+    ///     Adds configuration for <see cref="Serilog" /> with exception destructuring from <see cref="Destructurama" /> and required enrichment
     /// </summary>
-    /// <param name="builder"><see cref="WebApplicationBuilder"/></param>
+    /// <param name="builder">
+    ///     <see cref="WebApplicationBuilder" />
+    /// </param>
     public static void ConfigureSerilog(this WebApplicationBuilder builder)
     {
         var destructurers = new IExceptionDestructurer[] { new DbUpdateExceptionDestructurer(), new SqlExceptionDestructurer() };

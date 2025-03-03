@@ -1,5 +1,7 @@
 using System.Text.Json;
+
 using CorrelationId;
+
 using Domain.App.Core.Auth;
 using Domain.App.Core.Configuration;
 using Domain.App.Core.Database;
@@ -8,13 +10,17 @@ using Domain.App.Core.Logging;
 using Domain.App.Core.Mediator;
 using Domain.App.Core.Monitoring;
 using Domain.App.Core.Swagger;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+
 using Serilog;
+
 
 namespace Domain.App.Core.Utility;
 

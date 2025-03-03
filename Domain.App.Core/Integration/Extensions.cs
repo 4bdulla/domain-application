@@ -1,16 +1,22 @@
 using System.Reflection;
 using System.Text.Json;
+
 using CorrelationId.DependencyInjection;
+
 using Domain.App.Core.Exceptions.Abstraction;
 using Domain.App.Core.Integration.Attributes;
 using Domain.App.Core.Integration.Configurators;
 using Domain.App.Core.Utility;
+
 using FluentValidation;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+
 
 namespace Domain.App.Core.Integration;
 
@@ -29,7 +35,7 @@ public static class Extensions
                 IApplicationException appException =>
                     ApiResponse.CreateResponse(appException.ErrorCode, exception, isDevelopment),
 
-                _ => ApiResponse.Error(exception, isDevelopment),
+                _ => ApiResponse.Error(exception, isDevelopment)
             };
 
             await context.Response.WriteAsJsonAsync(response);

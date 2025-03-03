@@ -1,7 +1,10 @@
 using Domain.App.Core.Options;
+
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
+
 
 namespace Domain.App.Core.Swagger;
 

@@ -1,9 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+
 using Domain.App.Core.Options;
+
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+
 using NetDevPack.Security.Jwt.Core.Interfaces;
+
 
 namespace Domain.App.Core.Auth;
 
