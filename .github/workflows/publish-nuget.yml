@@ -1,7 +1,7 @@
 name: Publish NuGet Package
 
 on:
-  workflow_dispatch: # Allows manual trigger
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -15,7 +15,7 @@ jobs:
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x' # Adjust if needed
+          dotnet-version: '8.0.x'
 
       - name: Restore Dependencies
         run: dotnet restore
