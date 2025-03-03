@@ -15,27 +15,39 @@ using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMe
 
 namespace Domain.App.Core.Integration.Configurators;
 
-// todo: enrich code to use swagger's annotations on response type
 internal class ApiRequestConfigurator
 {
+    private readonly Type[] _types;
     private readonly bool _useValidation;
-    private readonly bool _useAuthInDevelopmentEnvironment;
+    private readonly bool _useAuth;
 
 
-    internal ApiRequestConfigurator(bool useValidation, bool useAuthInDevelopmentEnvironment)
+    internal ApiRequestConfigurator(AppDomain domain, string applicationName, bool useValidation, bool useAuth)
     {
-        _useValidation = useValidation;
-        _useAuthInDevelopmentEnvironment = useAuthInDevelopmentEnvironment;
+        _types = domain.GetAssemblies()
+            .SelectMany(a => a.GetTypesByAttribute<ApiRequestAttribute>(t => typeof(IBaseRequest).IsAssignableFrom(t)))
+            .Where(t => t.Namespace?.Contains(applicationName) == true)
+            .ToArray();
 
-        Log.Debug(
-            "{Configurator} starting with UseValidation = {UseValidation}, UseAuthInDevelopmentEnvironment = {UseAuthInDevelopmentEnvironment}",
+        _useValidation = useValidation;
+        _useAuth = useAuth;
+
+        Log.Debug("{Configurator} starting for {ApplicationName} with UseValidation = {UseValidation}, UseAuth = {UseAuth}",
             nameof(ApiRequestConfigurator),
+            applicationName,
             _useValidation,
-            _useAuthInDevelopmentEnvironment);
+            _useAuth);
     }
 
+    internal void ConfigureApiRequestRoutes(WebApplication app)
+    {
+        foreach (Type type in _types)
+        {
+            this.ConfigureApiRequestRoute(app, type);
+        }
+    }
 
-    internal void ConfigureApiRequestRoute(WebApplication app, Type type)
+    private void ConfigureApiRequestRoute(WebApplication app, Type type)
     {
         Log.Debug("configuring route for {Type}", type.Name);
 
@@ -47,6 +59,7 @@ internal class ApiRequestConfigurator
 
         Log.Debug("mapping {Method} to the {Path} with {Type} request", attribute!.Method, attribute!.Path, type.Name);
 
+        // todo: enrich code to use swagger's annotations on response type
         this.MapApiRoute(app, attribute, invoke);
     }
 
@@ -56,9 +69,10 @@ internal class ApiRequestConfigurator
         bool voidRequest = type.GetInterfaces().Contains(typeof(IRequest));
 
         Type[] genericTypes = !voidRequest
-            ? new[] { type, type.GetGenericArgumentsFromImplementedInterfaces(typeof(IRequest<>))[0] }
-            : new[] { type };
+            ? [type, type.GetGenericArgumentsFromImplementedInterfaces(typeof(IRequest<>))[0]]
+            : [type];
 
+        // todo add patch method support
         Type handlerType = attribute!.Method switch
         {
             HttpMethod.Get when voidRequest => typeof(RouteHandlers.GetWithoutResponse<>),
@@ -71,13 +85,14 @@ internal class ApiRequestConfigurator
                 $"Only GET, PUT, POST, DELETE methods are allowed to be used. Requested method: {attribute.Method}")
         };
 
+        // todo update validation mechanism
         string methodName = _useValidation ? RouteHandlers.Handler : RouteHandlers.HandlerWithoutValidation;
 
         Type genericHandlerType = handlerType.MakeGenericType(genericTypes);
 
         MethodInfo method = genericHandlerType.GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
 
-        var invoke = (Delegate)method?.Invoke(null, new object[] { attribute });
+        var invoke = (Delegate)method?.Invoke(null, [attribute]);
 
         return invoke;
     }
@@ -87,8 +102,9 @@ internal class ApiRequestConfigurator
         ApiRequestAttribute attribute,
         Delegate requestDelegate)
     {
-        bool authorize = attribute.Authorize && _useAuthInDevelopmentEnvironment;
+        bool authorize = attribute.Authorize && _useAuth;
 
+        // todo add patch method support
         RouteHandlerBuilder routeHandlerBuilder = attribute.Method switch
         {
             HttpMethod.Get => routeBuilder.MapGet(attribute.Path, requestDelegate),
@@ -99,9 +115,17 @@ internal class ApiRequestConfigurator
                 $"Only GET, PUT, POST, DELETE methods are allowed to be used. Requested method: {attribute.Method}")
         };
 
-        if (authorize)
+        if (!authorize)
+            return;
+
+        if (attribute.AllowedRoles.Length > 0)
         {
-            routeHandlerBuilder.RequireAuthorization();
+            routeHandlerBuilder.RequireAuthorization(policyBuilder => policyBuilder.RequireRole(attribute.AllowedRoles));
+        }
+
+        if (!string.IsNullOrWhiteSpace(attribute.PolicyName))
+        {
+            routeHandlerBuilder.RequireAuthorization(attribute.PolicyName);
         }
     }
 }

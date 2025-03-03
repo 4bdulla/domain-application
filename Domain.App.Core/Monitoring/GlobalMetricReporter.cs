@@ -12,47 +12,43 @@ public class GlobalMetricReporter
 
     private readonly Gauge _serviceUptimeGauge;
 
-    public GlobalMetricReporter(string environment, string category)
+    public GlobalMetricReporter(string environment)
     {
-        Metrics.DefaultRegistry.SetStaticLabels(new Dictionary<string, string>
-        {
-            { nameof(environment), environment },
-            { nameof(category), category }
-        });
+        Metrics.DefaultRegistry.SetStaticLabels(new Dictionary<string, string> { { nameof(environment), environment }, });
 
         _serviceStatusGauge = Metrics.CreateGauge(
             "service_status",
             "Service up/down status",
-            new GaugeConfiguration { LabelNames = new[] { "service" } });
+            new GaugeConfiguration { LabelNames = ["service"] });
 
         _serviceUptimeGauge = Metrics.CreateGauge(
             "service_uptime",
             "Uptime of the service",
-            new GaugeConfiguration { LabelNames = new[] { "service" } });
+            new GaugeConfiguration { LabelNames = ["service"] });
 
         this.RequestProcessingDuration = Metrics.CreateHistogram(
-            "request_processing_duration",
-            "Request processing duration",
+            "mediator_request_processing_duration",
+            "Mediator request processing duration",
             new HistogramConfiguration
             {
                 Buckets = Histogram.ExponentialBuckets(1, 2, 16),
-                LabelNames = new[] { "request" }
+                LabelNames = ["request"]
             });
 
         this.RequestInProcess = Metrics.CreateGauge(
-            "request_in_process",
-            "Count of currently processing requests",
-            new GaugeConfiguration { LabelNames = new[] { "request" } });
+            "mediator_request_in_process",
+            "Count of currently processing Mediator requests",
+            new GaugeConfiguration { LabelNames = ["request"] });
 
         this.Requests = Metrics.CreateCounter(
-            "request_count",
-            "Count of requests",
-            labelNames: new[] { "request" });
+            "mediator_request_count",
+            "Count of Mediator requests",
+            labelNames: ["request"]);
 
         this.Exceptions = Metrics.CreateCounter(
             "exception_count",
             "Number of exceptions",
-            labelNames: new[] { "request", "error_code" });
+            labelNames: ["request", "error_code"]);
     }
 
     public Histogram RequestProcessingDuration { get; }

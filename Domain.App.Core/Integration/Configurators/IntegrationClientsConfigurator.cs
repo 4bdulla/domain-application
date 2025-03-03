@@ -24,21 +24,17 @@ internal class IntegrationClientsConfigurator
 {
     private readonly Type[] _types;
 
-    public IntegrationClientsConfigurator(AppDomain domain)
+    internal IntegrationClientsConfigurator(AppDomain domain, string applicationName)
     {
-        string appDomainSimplifiedName = domain.FriendlyName
-            .Replace(".dll", string.Empty)
-            .Replace(".exe", string.Empty);
-
-        Log.Debug("{Configurator} starting for {ApplicationName}", nameof(IntegrationClientsConfigurator), appDomainSimplifiedName);
+        Log.Debug("{Configurator} starting for {ApplicationName}", nameof(IntegrationClientsConfigurator), applicationName);
 
         _types = domain.GetAssemblies()
             .SelectMany(a => a.GetTypesByAttribute<IntegrationClientAttribute>())
-            .Where(t => !t.Name.TrimStart('I').Equals(appDomainSimplifiedName))
+            .Where(t => !t.Name.TrimStart('I').Equals(applicationName))
             .ToArray();
     }
 
-    public void ConfigureClients(WebApplicationBuilder builder, JsonSerializerOptions settings)
+    internal void ConfigureClients(WebApplicationBuilder builder, JsonSerializerOptions serializerOptions)
     {
         foreach (Type type in _types)
         {
@@ -48,7 +44,7 @@ internal class IntegrationClientsConfigurator
 
             Log.Debug("configuring {Client} options: {@Options}", clientName, clientOptions);
 
-            ConfigureClient(builder, type, clientOptions, settings);
+            ConfigureClient(builder, type, clientOptions, serializerOptions);
         }
     }
 
@@ -77,10 +73,11 @@ internal class IntegrationClientsConfigurator
             return clientOptions;
         }
 
-        var errorMessage =
-            $"{clientName} options should be either configured in settings file or at least {nameof(ClientOptions.BaseAddress)} should be defined in {nameof(IntegrationClientAttribute)} constructor!";
+        string message =
+            $"{clientName} options should be either configured in settings file " +
+            $"or at least {nameof(ClientOptions.BaseAddress)} should be defined in {nameof(IntegrationClientAttribute)} constructor!";
 
-        throw new InvalidOperationException(errorMessage);
+        throw new InvalidOperationException(message);
     }
 
 

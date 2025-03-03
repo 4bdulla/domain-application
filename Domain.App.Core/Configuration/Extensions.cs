@@ -13,15 +13,9 @@ public static class Extensions
 {
     public static void LoadConfiguration(this WebApplicationBuilder builder)
     {
-        string configurationFile = builder.Environment.IsDevelopment()
-            ? "appsettings.Development.json"
-            : "appsettings.json";
-
         builder.Configuration
-
-            // .AddJsonFile(configurationFile)
             .EnableSubstitutionsWithDelimitedFallbackDefaults("{", "}", ":")
-            .AddEnvironmentVariables("ENV_");
+            .AddEnvironmentVariables();
     }
 
     /// <summary>
@@ -38,14 +32,14 @@ public static class Extensions
     {
         string optionsName = typeof(TOptions).Name;
 
-        IConfigurationSection optionsConfiguration = builder.Configuration.GetSection(optionsName);
+        IConfigurationSection config = builder.Configuration.GetSection(optionsName);
 
-        TOptions options = optionsConfiguration.Get<TOptions>();
+        TOptions options = config.Get<TOptions>();
 
         if (validator is not null && !validator.Invoke(options))
             throw new InvalidOperationException($"{optionsName} is not found in configuration or misconfigured!");
 
-        builder.Services.Configure<TOptions>(optionsConfiguration);
+        builder.Services.Configure<TOptions>(config);
 
         return options;
     }

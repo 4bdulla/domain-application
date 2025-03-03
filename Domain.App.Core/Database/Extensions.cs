@@ -11,24 +11,24 @@ namespace Domain.App.Core.Database;
 
 public static class Extensions
 {
-    public static SqlDbOptions ConfigureSqlDbOptions(this WebApplicationBuilder builder)
+    public static DatabaseOptions ConfigureSqlDbOptions(this WebApplicationBuilder builder)
     {
-        IConfigurationSection options = builder.Configuration.GetSection(nameof(SqlDbOptions));
+        IConfigurationSection options = builder.Configuration.GetSection(nameof(DatabaseOptions));
 
-        SqlDbOptions sqlDbOptions = options.Get<SqlDbOptions>();
+        DatabaseOptions databaseOptions = options.Get<DatabaseOptions>();
 
-        if (sqlDbOptions is null)
-            throw new InvalidOperationException($"{nameof(SqlDbOptions)} was not found in configuration!");
+        if (databaseOptions is null)
+            throw new InvalidOperationException($"{nameof(DatabaseOptions)} was not found in configuration!");
 
-        if (string.IsNullOrWhiteSpace(sqlDbOptions.ConnectionString))
-            throw new InvalidOperationException($"{nameof(SqlDbOptions)}.{nameof(SqlDbOptions.ConnectionString)} can't be null!");
+        if (string.IsNullOrWhiteSpace(databaseOptions.ConnectionString))
+            throw new InvalidOperationException($"{nameof(DatabaseOptions)}.{nameof(DatabaseOptions.ConnectionString)} can't be null!");
 
-        builder.Services.Configure<SqlDbOptions>(options);
+        builder.Services.Configure<DatabaseOptions>(options);
 
-        return sqlDbOptions;
+        return databaseOptions;
     }
 
-    public static void AddSqlDb<TDbContext>(this WebApplicationBuilder builder, SqlDbOptions options)
+    public static void AddSqlDb<TDbContext>(this WebApplicationBuilder builder, DatabaseOptions options)
     where TDbContext : DbContext => builder.Services.AddDbContext<DbContext, TDbContext>(o => o.UseSqlServer(options.ConnectionString));
 
     public static void AddAuditor(this WebApplicationBuilder builder)
@@ -37,7 +37,7 @@ public static class Extensions
         builder.Services.AddSingleton<ChangeAuditor>();
     }
 
-    public static async Task<bool> EnsureApplicationDbCreatedAsync<TDbContext>(this WebApplication app, SqlDbOptions options)
+    public static async Task<bool> EnsureApplicationDbCreatedAsync<TDbContext>(this WebApplication app, DatabaseOptions options)
     where TDbContext : DbContext
     {
         if (!app.Environment.IsDevelopment())

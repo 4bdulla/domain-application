@@ -23,12 +23,7 @@ public class DomainApplicationWrapper
 
         Log.Debug("hosting environment: {Environment}", this.Builder.Environment.EnvironmentName);
 
-        string category = this.Builder.Configuration.GetValue<string>("Category");
-
-        if (string.IsNullOrWhiteSpace(category))
-            throw new InvalidOperationException($"{nameof(category)} setting is not configured!");
-
-        this.Reporter = new GlobalMetricReporter(this.Builder.Environment.EnvironmentName, category);
+        this.Reporter = new GlobalMetricReporter(this.Builder.Environment.EnvironmentName);
     }
 
 
@@ -37,7 +32,7 @@ public class DomainApplicationWrapper
     public WebApplicationBuilder Builder { get; set; }
     public WebApplication App { get; set; }
     public AuthOptions AuthOptions { get; set; }
-    public SqlDbOptions SqlDbOptions { get; set; }
+    public DatabaseOptions DatabaseOptions { get; set; }
     public RoutingOptions RoutingOptions { get; set; }
 
     public DomainApplicationWrapper BuildDomainApplication()
@@ -76,19 +71,19 @@ public class DomainApplicationWrapper
 
     private void LogApplicationConfiguration()
     {
-        if (this.SqlDbOptions is not null)
+        if (this.DatabaseOptions is not null)
         {
-            Log.Debug("database options: {@DbOptions}", this.SqlDbOptions);
+            Log.Debug("database options: {@Options}", this.DatabaseOptions);
         }
 
         if (this.AuthOptions is not null)
         {
-            Log.Debug("auth options: {@AuthOptions}", this.AuthOptions);
+            Log.Debug("auth options: {@Options}", this.AuthOptions);
         }
 
         if (this.RoutingOptions is not null)
         {
-            Log.Debug("routing options: {@RoutingOptions}", this.RoutingOptions);
+            Log.Debug("routing options: {@Options}", this.RoutingOptions);
         }
     }
 }

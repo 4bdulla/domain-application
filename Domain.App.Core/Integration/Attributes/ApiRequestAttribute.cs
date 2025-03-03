@@ -14,6 +14,7 @@ public class ApiRequestAttribute : Attribute, IRouteTemplateProvider
         string path,
         HttpMethod method,
         bool authorize = false,
+        string policyName = null,
         params string[] allowedRoles)
     {
         if (string.IsNullOrWhiteSpace(path))
@@ -26,19 +27,26 @@ public class ApiRequestAttribute : Attribute, IRouteTemplateProvider
         this.Template = path;
         this.Name = path;
         this.Method = method;
+        this.PolicyName = policyName;
         this.Authorize = authorize;
-        this.AllowedRoles = string.Join(",", allowedRoles);
+        this.AllowedRoles = allowedRoles;
 
-        if (this.Authorize && string.IsNullOrWhiteSpace(this.AllowedRoles))
-            throw new InvalidOperationException(
-                $"{nameof(this.AllowedRoles)} should be defined when {nameof(this.Authorize)} is true!");
+        if (!this.Authorize ||
+            this.AllowedRoles is not null && this.AllowedRoles.Length != 0 && !string.IsNullOrWhiteSpace(this.PolicyName))
+            return;
+
+        const string message =
+            $"{nameof(this.AllowedRoles)} or {nameof(this.PolicyName)} should be defined when {nameof(this.Authorize)} is true!";
+
+        throw new InvalidOperationException(message);
     }
 
     public string Path { get; set; }
     public HttpMethod Method { get; set; }
     public bool Authorize { get; set; }
-    public string AllowedRoles { get; set; }
+    public string PolicyName { get; set; }
+    public string[] AllowedRoles { get; set; }
     public string Template { get; }
-    public int? Order => default;
+    public int? Order => null;
     public string Name { get; }
 }

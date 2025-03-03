@@ -37,6 +37,7 @@ public static class DomainApplicationBuilderExtensions
         wrapper.Builder.Services.AddEndpointsApiExplorer();
         wrapper.Builder.Services.AddHttpContextAccessor();
 
+        // todo ensure same tracing across different services
         wrapper.Builder.Services.AddOpenTelemetry()
             .ConfigureResource(b => b.AddService(wrapper.Builder.Environment.ApplicationName))
             .WithTracing(b => b.AddAspNetCoreInstrumentation());
@@ -57,9 +58,10 @@ public static class DomainApplicationBuilderExtensions
     public static DomainApplicationWrapper ConfigureApplicationDbContext<TDbContext>(this DomainApplicationWrapper wrapper)
     where TDbContext : DbContext
     {
-        wrapper.SqlDbOptions = wrapper.Builder.ConfigureSqlDbOptions();
+        wrapper.DatabaseOptions = wrapper.Builder.ConfigureSqlDbOptions();
 
-        wrapper.Builder.AddSqlDb<TDbContext>(wrapper.SqlDbOptions);
+        // todo add switch and options for different db setups
+        wrapper.Builder.AddSqlDb<TDbContext>(wrapper.DatabaseOptions);
         wrapper.Builder.AddAuditor();
 
         return wrapper;
@@ -68,6 +70,21 @@ public static class DomainApplicationBuilderExtensions
     public static DomainApplicationWrapper ConfigureApplicationAuthorizationOptions(this DomainApplicationWrapper wrapper)
     {
         wrapper.AuthOptions = wrapper.Builder.ConfigureAuthOptions();
+
+        return wrapper;
+    }
+
+    public static DomainApplicationWrapper ConfigureApplicationAuthorization<TDbContext>(this DomainApplicationWrapper wrapper)
+    where TDbContext : DbContext
+    {
+        if (wrapper.AuthOptions.IsAuthServer)
+        {
+            wrapper.ConfigureApplicationAuthorizationServer<TDbContext>();
+        }
+        else
+        {
+            wrapper.ConfigureApplicationAuthorizationClient();
+        }
 
         return wrapper;
     }
@@ -100,7 +117,7 @@ public static class DomainApplicationBuilderExtensions
         return wrapper;
     }
 
-    public static DomainApplicationWrapper ConfigureServices(
+    public static DomainApplicationWrapper ConfigureCustomServices(
         this DomainApplicationWrapper wrapper,
         Action<WebApplicationBuilder> configureServices)
     {
@@ -113,7 +130,7 @@ public static class DomainApplicationBuilderExtensions
     public static async Task<DomainApplicationWrapper> UseDatabase<TDbContext>(this DomainApplicationWrapper wrapper)
     where TDbContext : DbContext
     {
-        bool dbCreated = await wrapper.App.EnsureApplicationDbCreatedAsync<TDbContext>(wrapper.SqlDbOptions);
+        bool dbCreated = await wrapper.App.EnsureApplicationDbCreatedAsync<TDbContext>(wrapper.DatabaseOptions);
 
         Log.Debug("database created: {DbCreated}", dbCreated);
 
@@ -145,7 +162,7 @@ public static class DomainApplicationBuilderExtensions
         return wrapper;
     }
 
-    public static DomainApplicationWrapper UseApplicationConfiguration(
+    public static DomainApplicationWrapper UseCustomConfigureApplication(
         this DomainApplicationWrapper wrapper,
         Action<WebApplication> configureApplication)
     {

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Domain.App.Core.FastFailing;
 
+// todo replace with WebApplicationBuilder.ValidateOnBuild mechanism
 public class FailFastTask
 {
     private readonly IServiceCollection _services;

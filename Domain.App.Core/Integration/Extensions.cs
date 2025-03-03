@@ -42,33 +42,13 @@ public static class Extensions
         }));
     }
 
-    public static void MapApiRoutes(this WebApplication app, bool useValidation, bool useAuthInDevelopmentEnvironment)
-    {
-        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+    public static void MapApiRoutes(this WebApplication app, bool useValidation, bool useAuth) =>
+        new ApiRequestConfigurator(AppDomain.CurrentDomain, app.Environment.ApplicationName, useValidation, useAuth)
+            .ConfigureApiRequestRoutes(app);
 
-        string appDomainSimplifiedName = AppDomain.CurrentDomain.FriendlyName
-            .Replace(".dll", string.Empty)
-            .Replace(".exe", string.Empty);
-
-        Type[] types = assemblies
-            .SelectMany(a => a.GetTypesByAttribute<ApiRequestAttribute>(t => typeof(IBaseRequest).IsAssignableFrom(t)))
-            .Where(t => t.Namespace?.Contains(appDomainSimplifiedName) == true)
-            .ToArray();
-
-        var configurator = new ApiRequestConfigurator(useValidation, useAuthInDevelopmentEnvironment);
-
-        foreach (Type type in types)
-        {
-            configurator.ConfigureApiRequestRoute(app, type);
-        }
-    }
-
-    public static void ConfigureRefitClients(this WebApplicationBuilder builder, JsonSerializerOptions settings)
-    {
-        var configurator = new IntegrationClientsConfigurator(AppDomain.CurrentDomain);
-
-        configurator.ConfigureClients(builder, settings);
-    }
+    public static void ConfigureRefitClients(this WebApplicationBuilder builder, JsonSerializerOptions serializerOptions) =>
+        new IntegrationClientsConfigurator(AppDomain.CurrentDomain, builder.Environment.ApplicationName)
+            .ConfigureClients(builder, serializerOptions);
 
     public static void ConfigureCorrelationId(this WebApplicationBuilder builder)
     {

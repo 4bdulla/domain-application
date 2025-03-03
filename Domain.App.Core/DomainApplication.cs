@@ -23,12 +23,12 @@ public static class DomainApplication
                     .ConfigureApplicationDefaults(false, serializerOptions?.Invoke() ?? JsonHandling.Options)
                     .ConfigureApplicationAuthorizationOptions()
                     .ConfigureApplicationAuthorizationClient()
-                    .ConfigureServices(configureServices)
+                    .ConfigureCustomServices(configureServices)
                     .ConfigureSwagger()
                     .BuildDomainApplication()
                     .UseApplicationDefaults()
                     .UseApplicationApiEndpoints()
-                    .UseApplicationConfiguration(configureApplication)
+                    .UseCustomConfigureApplication(configureApplication)
                     .Run();
 
                 return Task.CompletedTask;
@@ -44,26 +44,16 @@ public static class DomainApplication
         await InternalRunAsync(args,
             async wrapper =>
             {
-                wrapper.ConfigureApplicationDefaults(addTransactionBehavior, serializerOptions?.Invoke() ?? JsonHandling.Options)
-                    .ConfigureApplicationAuthorizationOptions();
-
-                if (wrapper.AuthOptions.IsAuthServer)
-                {
-                    wrapper.ConfigureApplicationAuthorizationServer<TDbContext>();
-                }
-                else
-                {
-                    wrapper.ConfigureApplicationAuthorizationClient();
-                }
-
-                await wrapper
-                    .ConfigureServices(configureServices)
+                await wrapper.ConfigureApplicationDefaults(addTransactionBehavior, serializerOptions?.Invoke() ?? JsonHandling.Options)
+                    .ConfigureApplicationAuthorizationOptions()
+                    .ConfigureApplicationAuthorization<TDbContext>()
+                    .ConfigureCustomServices(configureServices)
                     .ConfigureApplicationDbContext<TDbContext>()
                     .ConfigureSwagger()
                     .BuildDomainApplication()
                     .UseApplicationDefaults()
                     .UseApplicationApiEndpoints()
-                    .UseApplicationConfiguration(configureApplication)
+                    .UseCustomConfigureApplication(configureApplication)
                     .UseDatabase<TDbContext>();
 
                 wrapper.Run();
