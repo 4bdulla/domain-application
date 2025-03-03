@@ -3,18 +3,18 @@ using System.Reflection;
 
 namespace Domain.App.Core.Integration.Serialization;
 
-internal interface ISampleInterface { }
+internal interface ISampleInterface;
 
 
 public static class TypeMapper
 {
-    private static readonly Dictionary<Type, string> TypeToNameMappings = new();
-    private static readonly Dictionary<string, Type> NameToTypeMappings = new();
+    private static readonly Dictionary<Type, string> _typeToNameMappings = new();
+    private static readonly Dictionary<string, Type> _nameToTypeMappings = new();
 
 
     static TypeMapper()
     {
-        Type[] targetInterfaces = { typeof(ISampleInterface) };
+        Type[] targetInterfaces = [typeof(ISampleInterface)];
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         foreach (Assembly assembly in assemblies)
@@ -26,7 +26,7 @@ public static class TypeMapper
 
     public static Type GetTypeFromName(string typeName)
     {
-        if (!NameToTypeMappings.TryGetValue(typeName, out Type type))
+        if (!_nameToTypeMappings.TryGetValue(typeName, out Type type))
             throw new InvalidOperationException($"Unknown type discriminator '{typeName}' during deserialization.");
 
         return type;
@@ -34,7 +34,7 @@ public static class TypeMapper
 
     public static string GetTypeName(Type type)
     {
-        if (!TypeToNameMappings.TryGetValue(type, out string typeName))
+        if (!_typeToNameMappings.TryGetValue(type, out string typeName))
             throw new InvalidOperationException("Type is not registered for serialization.");
 
         return typeName;
@@ -61,10 +61,10 @@ public static class TypeMapper
 
     private static void RegisterType(Type type)
     {
-        if (type == null) throw new ArgumentNullException(nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         string typeName = type.Name;
-        TypeToNameMappings[type] = typeName;
-        NameToTypeMappings[typeName] = type;
+        _typeToNameMappings[type] = typeName;
+        _nameToTypeMappings[typeName] = type;
     }
 }

@@ -6,13 +6,13 @@ using Prometheus;
 namespace Domain.App.Core.Monitoring;
 
 [MetricReporter]
-public class GlobalMetricReporter
+public class DefaultMetricReporter
 {
     private readonly Gauge _serviceStatusGauge;
 
     private readonly Gauge _serviceUptimeGauge;
 
-    public GlobalMetricReporter(string environment)
+    public DefaultMetricReporter(string environment)
     {
         Metrics.DefaultRegistry.SetStaticLabels(new Dictionary<string, string> { { nameof(environment), environment }, });
 

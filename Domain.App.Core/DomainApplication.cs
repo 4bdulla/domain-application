@@ -16,23 +16,18 @@ public static class DomainApplication
         Action<WebApplicationBuilder> configureServices = null,
         Action<WebApplication> configureApplication = null,
         Func<JsonSerializerOptions> serializerOptions = null) =>
-        await InternalRunAsync(args,
-            wrapper =>
-            {
-                wrapper
-                    .ConfigureApplicationDefaults(false, serializerOptions?.Invoke() ?? JsonHandling.Options)
-                    .ConfigureApplicationAuthorizationOptions()
-                    .ConfigureApplicationAuthorizationClient()
-                    .ConfigureCustomServices(configureServices)
-                    .ConfigureSwagger()
-                    .BuildDomainApplication()
-                    .UseApplicationDefaults()
-                    .UseApplicationApiEndpoints()
-                    .UseCustomConfigureApplication(configureApplication)
-                    .Run();
-
-                return Task.CompletedTask;
-            });
+        await RunApplication(args,
+            async wrapper => await wrapper
+                .ConfigureApplicationDefaults(false, serializerOptions?.Invoke() ?? JsonHandling.Options)
+                .ConfigureApplicationAuthorizationOptions()
+                .ConfigureApplicationAuthorizationClient()
+                .ConfigureCustomServices(configureServices)
+                .ConfigureSwagger()
+                .BuildDomainApplication()
+                .UseApplicationDefaults()
+                .UseApplicationApiEndpoints()
+                .UseCustomConfigureApplication(configureApplication)
+                .Run());
 
     public static async Task RunWithDbAsync<TDbContext>(
         string[] args,
@@ -41,7 +36,7 @@ public static class DomainApplication
         Func<JsonSerializerOptions> serializerOptions = null,
         bool addTransactionBehavior = true)
     where TDbContext : DbContext =>
-        await InternalRunAsync(args,
+        await RunApplication(args,
             async wrapper =>
             {
                 await wrapper.ConfigureApplicationDefaults(addTransactionBehavior, serializerOptions?.Invoke() ?? JsonHandling.Options)
@@ -56,13 +51,13 @@ public static class DomainApplication
                     .UseCustomConfigureApplication(configureApplication)
                     .UseDatabase<TDbContext>();
 
-                wrapper.Run();
+                await wrapper.Run();
             });
 
 
-    private static async Task InternalRunAsync(string[] args, Func<DomainApplicationWrapper, Task> run)
+    private static async Task RunApplication(string[] args, Func<DomainApplicationWrapper, Task> run)
     {
-        var wrapper = new DomainApplicationWrapper(args);
+        DomainApplicationWrapper wrapper = new(args);
 
         try
         {

@@ -1,10 +1,9 @@
-using Domain.App.Core.FastFailing;
 using Domain.App.Core.Monitoring;
 using Domain.App.Core.Options;
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using Serilog;
 
@@ -23,12 +22,14 @@ public class DomainApplicationWrapper
 
         Log.Debug("hosting environment: {Environment}", this.Builder.Environment.EnvironmentName);
 
-        this.Reporter = new GlobalMetricReporter(this.Builder.Environment.EnvironmentName);
+        this.Reporter = new DefaultMetricReporter(this.Builder.Environment.EnvironmentName);
+
+        this.Builder.Services.AddSingleton(this.Reporter);
     }
 
 
     public string[] Args { get; set; }
-    public GlobalMetricReporter Reporter { get; set; }
+    public DefaultMetricReporter Reporter { get; set; }
     public WebApplicationBuilder Builder { get; set; }
     public WebApplication App { get; set; }
     public AuthOptions AuthOptions { get; set; }
@@ -37,22 +38,19 @@ public class DomainApplicationWrapper
 
     public DomainApplicationWrapper BuildDomainApplication()
     {
-        this.Builder.Services.AddSingleton(this.Reporter);
-
-        this.Builder.AddFastFailing();
-
+        this.Builder.Host.UseDefaultServiceProvider(options => options.ValidateOnBuild = true);
         this.App = this.Builder.Build();
 
         return this;
     }
 
-    public void Run()
+    public async Task Run()
     {
         this.LogApplicationConfiguration();
 
         this.Reporter.ServiceUp(this.Builder.Environment.ApplicationName);
 
-        this.App.RunWithFastFailing();
+        await this.App.RunAsync();
     }
 
     public void FatalException(Exception ex)

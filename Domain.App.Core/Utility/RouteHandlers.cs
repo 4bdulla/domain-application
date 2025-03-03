@@ -32,7 +32,7 @@ internal class RouteHandlers
 
                 await mediator.Send(request, token);
 
-                return Results.Json(ApiResponse.Ok(), JsonHandling.Options);
+                return Results.Json(ResponseFactory.Ok(), JsonHandling.Options);
             };
 
         internal static Func<TRequest, IMediator, CancellationToken, Task<IResult>> HandlerWithoutValidation(ApiRequestAttribute attribute)
@@ -40,7 +40,7 @@ internal class RouteHandlers
             {
                 await mediator.Send(request, token);
 
-                return Results.Json(ApiResponse.Ok(), JsonHandling.Options);
+                return Results.Json(ResponseFactory.Ok(), JsonHandling.Options);
             };
     }
 
@@ -55,13 +55,13 @@ internal class RouteHandlers
                 ValidationResult validationResult = await validator.ValidateAsync(request, token);
 
                 return validationResult.IsValid
-                    ? Results.Json(ApiResponse.Ok(await mediator.Send(request, token)), JsonHandling.Options)
+                    ? Results.Json(ResponseFactory.Ok(await mediator.Send(request, token)), JsonHandling.Options)
                     : Results.ValidationProblem(validationResult.ToDictionary());
             };
 
         internal static Func<TRequest, IMediator, CancellationToken, Task<IResult>> HandlerWithoutValidation(ApiRequestAttribute attribute)
             => async ([AsParameters] request, [FromServices] mediator, token) =>
-            Results.Json(ApiResponse.Ok(await mediator.Send(request, token)), JsonHandling.Options);
+            Results.Json(ResponseFactory.Ok(await mediator.Send(request, token)), JsonHandling.Options);
     }
 
 
@@ -79,7 +79,7 @@ internal class RouteHandlers
 
                 await mediator.Send(request, token);
 
-                return Results.Json(ApiResponse.Ok(), JsonHandling.Options);
+                return Results.Json(ResponseFactory.Ok(), JsonHandling.Options);
             };
 
         internal static Func<TRequest, IMediator, CancellationToken, Task<IResult>> HandlerWithoutValidation(ApiRequestAttribute attribute)
@@ -87,7 +87,7 @@ internal class RouteHandlers
             {
                 await mediator.Send(request, token);
 
-                return Results.Json(ApiResponse.Ok(), JsonHandling.Options);
+                return Results.Json(ResponseFactory.Ok(), JsonHandling.Options);
             };
     }
 
@@ -102,12 +102,12 @@ internal class RouteHandlers
                 ValidationResult validationResult = await validator.ValidateAsync(request, token);
 
                 return validationResult.IsValid
-                    ? Results.Json(ApiResponse.Ok(await mediator.Send(request, token)), JsonHandling.Options)
+                    ? Results.Json(ResponseFactory.Ok(await mediator.Send(request, token)), JsonHandling.Options)
                     : Results.ValidationProblem(validationResult.ToDictionary());
             };
 
         internal static Func<TRequest, IMediator, CancellationToken, Task<IResult>> HandlerWithoutValidation(ApiRequestAttribute attribute)
             => async ([FromBody] request, [FromServices] mediator, token) =>
-            Results.Json(ApiResponse.Ok(await mediator.Send(request, token)), JsonHandling.Options);
+            Results.Json(ResponseFactory.Ok(await mediator.Send(request, token)), JsonHandling.Options);
     }
 }

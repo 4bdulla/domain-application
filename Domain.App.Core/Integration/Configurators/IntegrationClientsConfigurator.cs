@@ -29,8 +29,7 @@ internal class IntegrationClientsConfigurator
         Log.Debug("{Configurator} starting for {ApplicationName}", nameof(IntegrationClientsConfigurator), applicationName);
 
         _types = domain.GetAssemblies()
-            .SelectMany(a => a.GetTypesByAttribute<IntegrationClientAttribute>())
-            .Where(t => !t.Name.TrimStart('I').Equals(applicationName))
+            .GetTypesByAttribute<IntegrationClientAttribute>(t => !t.Name.TrimStart('I').Equals(applicationName))
             .ToArray();
     }
 

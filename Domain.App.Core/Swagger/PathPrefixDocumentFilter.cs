@@ -8,14 +8,9 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Domain.App.Core.Swagger;
 
-public class PathPrefixDocumentFilter : IDocumentFilter
+public class PathPrefixDocumentFilter(IOptions<RoutingOptions> options) : IDocumentFilter
 {
-    private readonly RoutingOptions _options;
-
-    public PathPrefixDocumentFilter(IOptions<RoutingOptions> options)
-    {
-        _options = options?.Value;
-    }
+    private readonly RoutingOptions _options = options?.Value;
 
     public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
     {
@@ -30,7 +25,7 @@ public class PathPrefixDocumentFilter : IDocumentFilter
 
             swaggerDoc.Paths.Remove(path);
 
-            string leadingSlash = _options.RoutePrefix.StartsWith("/") ? string.Empty : "/";
+            string leadingSlash = _options.RoutePrefix.StartsWith('/') ? string.Empty : "/";
             swaggerDoc.Paths.Add($"{leadingSlash}{_options.RoutePrefix}{path}", pathToChange);
         }
     }

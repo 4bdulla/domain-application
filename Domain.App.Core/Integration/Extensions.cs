@@ -1,16 +1,11 @@
-using System.Reflection;
 using System.Text.Json;
 
 using CorrelationId.DependencyInjection;
 
 using Domain.App.Core.Exceptions.Abstraction;
-using Domain.App.Core.Integration.Attributes;
 using Domain.App.Core.Integration.Configurators;
-using Domain.App.Core.Utility;
 
 using FluentValidation;
-
-using MediatR;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -33,9 +28,9 @@ public static class Extensions
             ApiResponse<object> response = exception switch
             {
                 IApplicationException appException =>
-                    ApiResponse.CreateResponse(appException.ErrorCode, exception, isDevelopment),
+                    ResponseFactory.CreateResponse(appException.ErrorCode, exception, isDevelopment),
 
-                _ => ApiResponse.Error(exception, isDevelopment)
+                _ => ResponseFactory.Error(exception, isDevelopment)
             };
 
             await context.Response.WriteAsJsonAsync(response);
@@ -50,17 +45,13 @@ public static class Extensions
         new IntegrationClientsConfigurator(AppDomain.CurrentDomain, builder.Environment.ApplicationName)
             .ConfigureClients(builder, serializerOptions);
 
-    public static void ConfigureCorrelationId(this WebApplicationBuilder builder)
-    {
+    public static void ConfigureCorrelationId(this WebApplicationBuilder builder) =>
         builder.Services.AddDefaultCorrelationId(options =>
         {
             options.AddToLoggingScope = true;
             options.UpdateTraceIdentifier = true;
         });
-    }
 
-    public static void AddFluentValidation(this WebApplicationBuilder builder)
-    {
+    public static void AddFluentValidation(this WebApplicationBuilder builder) =>
         builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
-    }
 }

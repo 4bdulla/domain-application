@@ -25,8 +25,8 @@ internal class ApiRequestConfigurator
     internal ApiRequestConfigurator(AppDomain domain, string applicationName, bool useValidation, bool useAuth)
     {
         _types = domain.GetAssemblies()
-            .SelectMany(a => a.GetTypesByAttribute<ApiRequestAttribute>(t => typeof(IBaseRequest).IsAssignableFrom(t)))
-            .Where(t => t.Namespace?.Contains(applicationName) == true)
+            .GetTypesByAttribute<ApiRequestAttribute>(
+                t => typeof(IBaseRequest).IsAssignableFrom(t) && t.Namespace is not null && t.Namespace.Contains(applicationName))
             .ToArray();
 
         _useValidation = useValidation;
@@ -97,10 +97,7 @@ internal class ApiRequestConfigurator
         return invoke;
     }
 
-    private void MapApiRoute(
-        IEndpointRouteBuilder routeBuilder,
-        ApiRequestAttribute attribute,
-        Delegate requestDelegate)
+    private void MapApiRoute(IEndpointRouteBuilder routeBuilder, ApiRequestAttribute attribute, Delegate requestDelegate)
     {
         bool authorize = attribute.Authorize && _useAuth;
 

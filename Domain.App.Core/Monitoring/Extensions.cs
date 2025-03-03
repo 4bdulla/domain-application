@@ -1,5 +1,4 @@
 using System.Net;
-using System.Reflection;
 
 using Domain.App.Core.Monitoring.Attributes;
 using Domain.App.Core.Utility;
@@ -16,9 +15,7 @@ public static class Extensions
 {
     public static void AddMetricReporters(this WebApplicationBuilder builder)
     {
-        Assembly assembly = Assembly.GetEntryAssembly() ?? throw new InvalidOperationException("Cannot work in unmanaged application!");
-
-        IEnumerable<Type> types = assembly.GetTypesByAttribute<MetricReporterAttribute>();
+        Type[] types = AppDomain.CurrentDomain.GetAssemblies().GetTypesByAttribute<MetricReporterAttribute>().ToArray();
 
         foreach (Type type in types)
         {
