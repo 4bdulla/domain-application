@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FirebaseAdmin" Version="3.1.0" />
     <PackageReference Include="NetDevPack.Security.Jwt" Version="5.0.17"/>
     <PackageReference Include="NetDevPack.Security.Jwt.AspNetCore" Version="8.2.2" />
     <PackageReference Include="NetDevPack.Security.Jwt.Core" Version="8.2.2" />

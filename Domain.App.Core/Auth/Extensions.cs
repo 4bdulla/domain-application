@@ -1,9 +1,5 @@
 using Domain.App.Core.Options;
 
-using FirebaseAdmin;
-
-using Google.Apis.Auth.OAuth2;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -98,12 +94,6 @@ public static class Extensions
             })
             .AddEntityFrameworkStores<TDbContext>()
             .AddDefaultTokenProviders();
-
-        builder.Services.AddSingleton(FirebaseApp.Create(new AppOptions
-        {
-            Credential = GoogleCredential.GetApplicationDefault(),
-            ProjectId = string.Empty //todo: update with project id
-        }));
     }
 
     public static void UseAuthDiscovery(this WebApplication app)
